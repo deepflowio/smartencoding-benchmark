@@ -1,0 +1,50 @@
+# 发送队列写入统计数据到influxdb的地址
+stats-enabled: false
+stats-ip: 127.0.0.1 
+stats-port: 20044
+stats-interval: 10
+
+# 写入数据的时间跨度, 秒
+time-interval: 60
+# 写入多少条，时间增加time-interval
+time-interval-write: 1000000
+# 开始写入的数据的时间戳和当前时间的偏差
+time-offset: 0
+
+# 共写入多少行后结束
+write-total-count: 100000000
+# 循环写入次数, 默认1，每次写write-total-count条
+writer-loop-count: 1
+# 几个线程同时写
+write-thread-count: 5 
+
+# 发送数据到写队列的速度 条/s，多线程之和, 防止发送过快后，导致写入队列满，就会丢失
+send-rate: 1000000
+
+# 每多大数据 批量发送一次ck写操作
+batch-size: 100000
+# 写入队列的长度
+queue-size: 1000000
+
+engine: MergeTree()
+storage: default
+ttl: 7
+
+# 写入的数据库名称, 若不存在自动创建
+db-name: test
+# 写入的table名称, 若不存在自动创建
+table-name: test
+
+# 写入的column信息, 默认写入time列，作为partition, 默认1天为一个partition
+columns:
+- name: lowcard_fix_string16
+  type: LowCardinality(FixedString(16))
+  value-range: [16, 16, 5000]  # string min_len =16, max_len=16, 5000 表示取值5000种
+  is-not-primary-key: false # 默认false: 表示作为 primary key
+  is-not-order-key: false # 默认false: 表示作为order key
+- name: fix_string16
+  type: FixedString(16)
+  value-range: [16, 16, 5000]
+- name: rand_string16
+  type: String
+  value-range: [16,16,200000] #  string min_len =16, max_len=16, 0表示随机取值(生成随机串性能差,不建议用,导致发送速率降低)
