@@ -102,10 +102,10 @@ func (c *Config) parseValues() error {
 		min := col.ValueRange[0]
 		max := col.ValueRange[1]
 		count := col.ValueRange[2]
-		if count > max-min {
-			count = max - min
-		}
 		if col.IsIntType() {
+			if count > max-min {
+				count = max - min
+			}
 			for i := 0; i < count; i++ {
 				value := min + randn(max-min)
 				col.intValues = append(col.intValues, value)

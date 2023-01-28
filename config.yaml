@@ -47,4 +47,4 @@ columns:
   value-range: [16, 16, 5000]
 - name: rand_string16
   type: String
-  value-range: [16,16,200000] #  string min_len =16, max_len=16, 0表示随机取值(生成随机串性能差,不建议用,导致发送速率降低)
+  value-range: [16,16,500000] #  string min_len =16, max_len=16, 0表示随机取值(生成随机串性能差,不建议用,导致发送速率降低)
