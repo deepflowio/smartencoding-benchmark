@@ -1,0 +1,130 @@
+
+# 发送统计数据到 influxdb的地址
+stats-enabled: true
+stats-ip: 127.0.0.1 
+stats-port: 20044
+stats-interval: 10
+
+# 写入数据的时间跨度, 秒
+time-interval: 60
+# 写入多少条，时间增加time-interval
+time-interval-write: 1000000
+# 开始写入的数据的时间戳和当前时间的偏差
+time-offset: 0
+
+# 共写入多少行后结束
+write-total-count: 100000000
+# 循环写入次数, 默认1，每次写write-total-count条
+writer-loop-count: 1
+# 几个线程同时写
+write-thread-count: 10
+
+# 发送数据到写队列的速度 条/s，多线程之和, 防止发送过快后，导致写入队列满，就会丢失
+send-rate: 200000
+
+# 每多大数据 批量发送一次ck写操作
+batch-size: 100000
+# 写入队列的长度
+queue-size: 10000000
+
+engine: MergeTree()
+storage: default
+ttl: 7
+
+# 写入的数据库名称, 若不存在自动创建
+db-name: test
+# 写入的table名称, 若不存在自动创建
+table-name: test_lowcard
+
+# 写入的column信息, 默认写入time列，作为partition, 默认1天为一个partition
+columns:
+- name: lowcard_string_8_32_0
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]  # string min_len =16, max_len=16, 5000 表示取值5000种
+- name: lowcard_string_8_32_1
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_2
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_3
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_4
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_5
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_6
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_7
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_8
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_9
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_10
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]  # string min_len =16, max_len=16, 5000 表示取值5000种
+- name: lowcard_string_8_32_11
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_12
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_13
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_14
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_15
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_16
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_17
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_18
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_19
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_20
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]  # string min_len =16, max_len=16, 5000 表示取值5000种
+- name: lowcard_string_8_32_21
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_22
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_23
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_24
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_25
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_26
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_27
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_28
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
+- name: lowcard_string_8_32_29
+  type: LowCardinality(String)
+  value-range: [8, 32, 10000]
