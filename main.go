@@ -301,8 +301,8 @@ func sendWrite(threadID int, cfg *Config, writer *Writer) {
 					time.Sleep((time.Duration(expectCostTime) - totalCostTime) * time.Millisecond)
 				}
 			}
-			if putCounter%3000000 == 0 {
-				fmt.Printf("thread %d put writer count %d \n", threadID, putCounter)
+			if putCounter%2000000 == 0 {
+				fmt.Printf("thread %d put writer count %d/%d cost time:%s\n", threadID, putCounter, cfg.WriteTotalCount/cfg.WriteThreadCount, time.Since(beginTime))
 			}
 		}
 	}
