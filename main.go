@@ -126,7 +126,7 @@ func (c *Config) parseValues() error {
 	return nil
 }
 
-func (c *Config) genItem(time uint32, i int) writeItem {
+func (c *Config) genItem(time uint32) writeItem {
 	items := make(writeItem, 0, len(c.Columns)+1)
 	items = append(items, time)
 	var intItem int
@@ -136,7 +136,7 @@ func (c *Config) genItem(time uint32, i int) writeItem {
 		max := v.ValueRange[1]
 		if v.IsIntType() {
 			if len(v.intValues) > 0 {
-				intItem = v.intValues[i%len(v.intValues)]
+				intItem = v.intValues[randn(100000000)%len(v.intValues)]
 			} else {
 				intItem = min + randn(max-min)
 			}
@@ -162,7 +162,7 @@ func (c *Config) genItem(time uint32, i int) writeItem {
 			items = append(items, item)
 		} else {
 			if len(v.stringValues) > 0 {
-				strItem = v.stringValues[i%len(v.stringValues)]
+				strItem = v.stringValues[randn(100000000)%len(v.stringValues)]
 			} else {
 				length := min + randn(max-min)
 				strItem = GetRandomString(length)
@@ -284,7 +284,7 @@ func sendWrite(threadID int, cfg *Config, writer *Writer) {
 	beginTime := time.Now()
 	for i := 0; i < cfg.WriteLoopCount; i++ {
 		for j := threadID; j < cfg.WriteTotalCount; j += cfg.WriteThreadCount {
-			putCache = append(putCache, cfg.genItem(rowTime, j))
+			putCache = append(putCache, cfg.genItem(rowTime))
 			if len(putCache) >= 1024 {
 				writer.Ckwriter.Put(putCache...)
 				putCache = putCache[:0]
