@@ -30,14 +30,17 @@ var password = flag.String("passord", "", "clickhouse password")
 var configFile = flag.String("f", "./config.yaml", "Specify config file location")
 
 type ColumnField struct {
-	Name            string `yaml:"name"`
-	Type            string `yaml:"type"`
-	Codec           string `yaml:"codec"`
-	ValueRange      []int  `yaml:"value-range"` // [min,max,count]
-	intValues       []int
-	stringValues    []string
-	IsNotOrderKey   bool `yaml:"is-not-order-key"`
-	IsNotPrimaryKey bool `yaml:"is-not-primary-key"`
+	Name              string `yaml:"name"`
+	Type              string `yaml:"type"`
+	Codec             string `yaml:"codec"`
+	Index             string `yaml:"index"`
+	ValueRange        []int  `yaml:"value-range"` // [min,max,count]
+	intValues         []int
+	stringValues      []string
+	arrayStringValues [][]string
+	mapKeys           []string
+	IsNotOrderKey     bool `yaml:"is-not-order-key"`
+	IsNotPrimaryKey   bool `yaml:"is-not-primary-key"`
 }
 
 func (c *ColumnField) IsIntType() bool {
@@ -45,7 +48,15 @@ func (c *ColumnField) IsIntType() bool {
 }
 
 func (c *ColumnField) IsStringType() bool {
-	return strings.Contains(c.Type, "String")
+	return c.Type == "String"
+}
+
+func (c *ColumnField) IsArrayStringType() bool {
+	return strings.Contains(c.Type, "Array(String)") || strings.Contains(c.Type, "Array(LowCardinality(String))")
+}
+
+func (c *ColumnField) IsMapType() bool {
+	return strings.Contains(c.Type, "Map")
 }
 
 type Config struct {
@@ -96,7 +107,7 @@ func randn(n int) int {
 func (c *Config) parseValues() error {
 	for i := range c.Columns {
 		col := &c.Columns[i]
-		if len(col.ValueRange) != 3 {
+		if len(col.ValueRange) < 3 {
 			return fmt.Errorf("column name:%s value-range length must be 3([min,max,count])", col.Name)
 		}
 		min := col.ValueRange[0]
@@ -117,6 +128,31 @@ func (c *Config) parseValues() error {
 					length = min + i%(max-min)
 				}
 				col.stringValues = append(col.stringValues, GetRandomString(length))
+			}
+		} else if col.IsArrayStringType() {
+			arrayLength := col.ValueRange[4]
+			col.arrayStringValues = make([][]string, arrayLength)
+			for j := 0; j < arrayLength; j++ {
+				for i := 0; i < count; i++ {
+					length := min
+					if max > min {
+						length = min + i%(max-min)
+					}
+					col.arrayStringValues[j] = append(col.arrayStringValues[j], GetRandomString(length))
+				}
+			}
+		} else if col.IsMapType() {
+			mapLength := col.ValueRange[4]
+			col.arrayStringValues = make([][]string, mapLength)
+			for j := 0; j < mapLength; j++ {
+				col.mapKeys = append(col.mapKeys, GetRandomString(8))
+				for i := 0; i < count; i++ {
+					length := min
+					if max > min {
+						length = min + i%(max-min)
+					}
+					col.arrayStringValues[j] = append(col.arrayStringValues[j], GetRandomString(length))
+				}
 			}
 		} else {
 			return fmt.Errorf("column type is %s, unsupport column type not is int or string", col.Type)
@@ -160,7 +196,7 @@ func (c *Config) genItem(time uint32) writeItem {
 				item = int8(intItem)
 			}
 			items = append(items, item)
-		} else {
+		} else if v.IsStringType() {
 			if len(v.stringValues) > 0 {
 				strItem = v.stringValues[randn(100000000)%len(v.stringValues)]
 			} else {
@@ -168,6 +204,24 @@ func (c *Config) genItem(time uint32) writeItem {
 				strItem = GetRandomString(length)
 			}
 			items = append(items, strItem)
+		} else if v.IsArrayStringType() {
+			min := v.ValueRange[3]
+			max := v.ValueRange[4]
+			length := min + randn(max-min)
+			arrayItem := make([]string, length)
+			for i := 0; i < length; i++ {
+				arrayItem[i] = v.arrayStringValues[i][randn(100000000)%len(v.arrayStringValues[i])]
+			}
+			items = append(items, arrayItem)
+		} else if v.IsMapType() {
+			min := v.ValueRange[3]
+			max := v.ValueRange[4]
+			length := min + randn(max-min)
+			mapItem := make(map[string]string, length)
+			for i := 0; i < length; i++ {
+				mapItem[v.mapKeys[i]] = v.arrayStringValues[i][randn(100000000)%len(v.arrayStringValues[i])]
+			}
+			items = append(items, mapItem)
 		}
 	}
 	return items
@@ -185,7 +239,11 @@ func (c *Config) GenTable() *ckdb.Table {
 				primaryKeyCount += 1
 			}
 		}
-		columns = append(columns, ckdb.NewColumn(v.Name, v.Type).SetIndex(ckdb.IndexNone.String()).SetCodec(ckdb.CodecDefault.String()))
+		if v.Index == "" {
+			columns = append(columns, ckdb.NewColumn(v.Name, v.Type).SetIndex(ckdb.IndexNone.String()).SetCodec(ckdb.CodecDefault.String()))
+		} else {
+			columns = append(columns, ckdb.NewColumn(v.Name, v.Type).SetIndex(v.Index).SetCodec(ckdb.CodecDefault.String()))
+		}
 	}
 	return &ckdb.Table{
 		ID:              0,
