@@ -1,10 +1,12 @@
 package main
 
 import (
+	. "encoding/binary"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
+	"net"
 	_ "net/http/pprof"
 	"os"
 	"strings"
@@ -44,11 +46,11 @@ type ColumnField struct {
 }
 
 func (c *ColumnField) IsIntType() bool {
-	return strings.Contains(c.Type, "Int")
+	return strings.Contains(c.Type, "Int") || strings.Contains(c.Type, "IPv") || strings.Contains(c.Type, "Float")
 }
 
 func (c *ColumnField) IsStringType() bool {
-	return c.Type == "String"
+	return c.Type == "String" || c.Type == "LowCardinality(String)"
 }
 
 func (c *ColumnField) IsArrayStringType() bool {
@@ -162,6 +164,12 @@ func (c *Config) parseValues() error {
 	return nil
 }
 
+func IpFromUint32(ipInt uint32) net.IP {
+	ip := make([]byte, net.IPv4len)
+	BigEndian.PutUint32(ip, ipInt)
+	return ip
+}
+
 func (c *Config) genItem(time uint32) writeItem {
 	items := make(writeItem, 0, len(c.Columns)+1)
 	items = append(items, time)
@@ -179,7 +187,7 @@ func (c *Config) genItem(time uint32) writeItem {
 			var item interface{}
 			switch v.Type {
 			case "UInt64":
-				item = uint32(intItem)
+				item = uint64(intItem)
 			case "UInt32":
 				item = uint32(intItem)
 			case "UInt16":
@@ -187,13 +195,19 @@ func (c *Config) genItem(time uint32) writeItem {
 			case "UInt8":
 				item = uint8(intItem)
 			case "Int64":
-				item = int32(intItem)
+				item = int64(intItem)
 			case "Int32":
 				item = int32(intItem)
 			case "Int16":
 				item = int16(intItem)
 			case "Int8":
 				item = int8(intItem)
+			case "IPv4":
+				item = IpFromUint32(uint32(intItem))
+			case "IPv6":
+				item = IpFromUint32(uint32(intItem))
+			case "Float64":
+				item = float64(intItem)
 			}
 			items = append(items, item)
 		} else if v.IsStringType() {
