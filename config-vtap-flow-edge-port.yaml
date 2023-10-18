@@ -1,0 +1,546 @@
+
+# 发送统计数据到 influxdb的地址
+stats-enabled: true
+stats-ip: 127.0.0.1 
+stats-port: 20044
+stats-interval: 10
+
+# 写入数据的时间跨度, 秒
+time-interval: 60
+# 写入多少条，时间增加time-interval
+time-interval-write: 2000000
+# 开始写入的数据的时间戳和当前时间的偏差
+time-offset: 0
+
+# 共写入多少行后结束
+write-total-count: 100000000
+# 循环写入次数, 默认1，每次写write-total-count条
+writer-loop-count: 1
+# 几个线程同时写
+write-thread-count: 10
+
+# 发送数据到写队列的速度 条/s，多线程之和, 防止发送过快后，导致写入队列满，就会丢失
+send-rate: 200000
+
+# 每多大数据 批量发送一次ck写操作
+batch-size: 100000
+# 写入队列的长度
+queue-size: 10000000
+
+engine: MergeTree()
+storage: df_storage
+ttl: 7
+
+# 写入的数据库名称, 若不存在自动创建
+db-name: flow_metrics
+# 写入的table名称, 若不存在自动创建
+table-name: vtap_flow_edge_port.1m_local
+
+# 写入的column信息, 默认写入time列，作为partition, 默认1天为一个partition
+columns:
+- name: _tid
+  type: UInt8
+  value-range: [1, 255, 10]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: az_id_0
+  type: UInt16
+  value-range: [1, 100000, 10000]
+- name: az_id_1
+  type: UInt16
+  value-range: [1, 100000, 10000]
+- name: gprocess_id_0
+  type: UInt32
+  value-range: [1, 100000, 10000]
+- name: gprocess_id_1
+  type: UInt32
+  value-range: [1, 100000, 10000]
+- name: host_id_0
+  type: UInt16
+  value-range: [1, 100000, 10000]
+- name: host_id_1
+  type: UInt16
+  value-range: [1, 100000, 10000]
+- name: ip4_0
+  type: IPv4
+  value-range: [1, 100000, 10000]
+- name: ip4_1
+  type: IPv4
+  value-range: [1, 100000, 10000]
+- name: ip6_0
+  type: IPv6
+  value-range: [1, 100000, 10000]
+- name: ip6_1
+  type: IPv6
+  value-range: [1, 100000, 10000]
+- name: is_ipv4
+  type: UInt8
+  value-range: [0, 1, 2]
+- name: l3_device_id_0
+  type: UInt32
+  value-range: [1, 100000, 10000]
+- name: l3_device_id_1
+  type: UInt32
+  value-range: [1, 100000, 10000]
+- name: l3_device_type_0
+  type: UInt8
+  value-range: [1, 200, 20]
+- name: l3_device_type_1
+  type: UInt8
+  value-range: [1, 200, 20]
+- name: l3_epc_id_0
+  type: Int32
+  value-range: [1, 100000, 10000]
+- name: l3_epc_id_1
+  type: Int32
+  value-range: [1, 100000, 10000]
+- name: pod_cluster_id_0
+  type: UInt16
+  value-range: [1, 100000, 10000]
+- name: pod_cluster_id_1
+  type: UInt16
+  value-range: [1, 100000, 10000]
+- name: pod_group_id_0
+  type: UInt32
+  value-range: [1, 100000, 10000]
+- name: pod_group_id_1
+  type: UInt32
+  value-range: [1, 100000, 10000]
+- name: pod_id_0
+  type: UInt32
+  value-range: [1, 100000, 10000]
+- name: pod_id_1
+  type: UInt32
+  value-range: [1, 100000, 10000]
+- name: pod_node_id_0
+  type: UInt32
+  value-range: [1, 100000, 10000]
+- name: pod_node_id_1
+  type: UInt32
+  value-range: [1, 100000, 10000]
+- name: pod_ns_id_0
+  type: UInt16
+  value-range: [1, 100000, 10000]
+- name: pod_ns_id_1
+  type: UInt16
+  value-range: [1, 100000, 10000]
+- name: protocol
+  type: UInt8
+  value-range: [1, 100, 10]
+- name: region_id_0
+  type: UInt16
+  value-range: [1, 100000, 10000]
+- name: region_id_1
+  type: UInt16
+  value-range: [1, 100000, 10000]
+- name: auto_instance_id_0
+  type: UInt32
+  value-range: [1, 100000, 10000]
+- name: auto_instance_type_0
+  type: UInt8
+  value-range: [1, 100, 10]
+- name: auto_service_id_0
+  type: UInt32
+  value-range: [1, 100000, 10000]
+- name: auto_service_type_0
+  type: UInt8
+  value-range: [1, 100, 10]
+- name: auto_instance_id_1
+  type: UInt32
+  value-range: [1, 100000, 10000]
+- name: auto_instance_type_1
+  type: UInt8
+  value-range: [1, 100, 10]
+- name: auto_service_id_1
+  type: UInt32
+  value-range: [1, 100000, 10000]
+- name: auto_service_type_1
+  type: UInt8
+  value-range: [1, 100, 10]
+- name: signal_source
+  type: UInt16
+  value-range: [1, 100000, 10000]
+- name: service_id_0
+  type: UInt32
+  value-range: [1, 100000, 10000]
+- name: service_id_1
+  type: UInt32
+  value-range: [1, 100000, 10000]
+- name: server_port
+  type: UInt16
+  value-range: [1, 100000, 10000]
+- name: subnet_id_0
+  type: UInt16
+  value-range: [1, 100000, 10000]
+- name: subnet_id_1
+  type: UInt16
+  value-range: [1, 100000, 10000]
+- name: tap_port_type
+  type: UInt8
+  value-range: [1, 100000, 10000]
+- name: tunnel_type
+  type: UInt8
+  value-range: [1, 100, 10]
+- name: tap_port
+  type: UInt32
+  value-range: [1, 100000, 10000]
+- name: nat_source
+  type: UInt8
+  value-range: [1, 100, 10]
+- name: tap_side
+  type: LowCardinality(String)
+  value-range: [3, 4, 10]
+- name: tap_type
+  type: UInt8
+  value-range: [1, 100, 10]
+- name: vtap_id
+  type: UInt16
+  value-range: [1, 100000, 10000]
+- name: packet_tx
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: packet_rx
+  type: UInt64
+  value-range: [1, 100000, 10000]
+- name: packet
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: byte_tx
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: byte_rx
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: byte
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: l3_byte_tx
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: l3_byte_rx
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: l4_byte_tx
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: l4_byte_rx
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: new_flow
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: closed_flow
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: l7_request
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: l7_response
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: syn_count
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: synack_count
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: direction_score
+  type: UInt8
+  value-range: [1, 255, 10]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: rtt_sum
+  type: Float64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: rtt_client_sum
+  type: Float64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: rtt_server_sum
+  type: Float64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: srt_sum
+  type: Float64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: art_sum
+  type: Float64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: rrt_sum
+  type: Float64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: cit_sum
+  type: Float64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: rtt_count
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: rtt_client_count
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: rtt_server_count
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: srt_count
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: art_count
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: rrt_count
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: cit_count
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: rtt_max
+  type: UInt32
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: rtt_client_max
+  type: UInt32
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: rtt_server_max
+  type: UInt32
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: srt_max
+  type: UInt32
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: art_max
+  type: UInt32
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: rrt_max
+  type: UInt32
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: cit_max
+  type: UInt32
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: retrans_tx
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: retrans_rx
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: retrans
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: zero_win_tx
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: zero_win_rx
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: zero_win
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: retrans_syn
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: retrans_synack
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: client_rst_flow
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: server_rst_flow
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: client_syn_repeat
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: server_syn_ack_repeat
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: client_half_close_flow
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: server_half_close_flow
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: client_source_port_reuse
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: server_reset
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: server_queue_lack
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: client_establish_other_rst
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: server_establish_other_rst
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: tcp_timeout
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: client_establish_fail
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: server_establish_fail
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: tcp_establish_fail
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: tcp_transfer_fail
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: tcp_rst_fail
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: l7_client_error
+  type: UInt32
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: l7_server_error
+  type: UInt32
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: l7_timeout
+  type: UInt32
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: l7_error
+  type: UInt32
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: flow_load
+  type: UInt64
+  value-range: [1, 100000, 10000]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: tag_source_0
+  type: UInt8
+  value-range: [1, 100, 10]
+  is-not-primary-key: true
+  is-not-order-key: true
+- name: tag_source_1
+  type: UInt8
+  value-range: [1, 100, 10]
+  is-not-primary-key: true
+  is-not-order-key: true
