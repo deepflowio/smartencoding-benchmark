@@ -28,13 +28,13 @@ batch-size: 100000
 queue-size: 10000000
 
 engine: MergeTree()
-storage: df_storage
+storage: default
 ttl: 7
 
 # 写入的数据库名称, 若不存在自动创建
-db-name: flow_metrics
+db-name: test
 # 写入的table名称, 若不存在自动创建
-table-name: vtap_flow_edge_port.1m_local
+table-name: vtap_flow_edge_port
 
 # 写入的column信息, 默认写入time列，作为partition, 默认1天为一个partition
 columns:
