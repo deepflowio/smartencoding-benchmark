@@ -398,7 +398,8 @@ func main() {
 
 	cfg := Load(*configFile)
 	if cfg.StatEnabled {
-		stats.SetRemotes(fmt.Sprintf("%s:%d", cfg.StatsIP, int(cfg.StatsPort)))
+		stats.SetRemoteType(stats.REMOTE_TYPE_DFSTATSD)
+		stats.SetDFRemote(fmt.Sprintf("%s:%d", cfg.StatsIP, int(cfg.StatsPort)))
 		stats.SetMinInterval(time.Duration(cfg.StatsInterval) * time.Second)
 	}
 

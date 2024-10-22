@@ -1,6 +1,6 @@
 
 # 发送统计数据到 influxdb的地址
-stats-enabled: true
+stats-enabled: false
 stats-ip: 127.0.0.1 
 stats-port: 20044
 stats-interval: 10
