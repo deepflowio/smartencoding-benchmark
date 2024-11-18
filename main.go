@@ -61,6 +61,10 @@ func (c *ColumnField) IsMapType() bool {
 	return strings.Contains(c.Type, "Map")
 }
 
+func (c *ColumnField) IsJsonType() bool {
+	return strings.Contains(strings.ToLower(c.Type), "json")
+}
+
 type Config struct {
 	DBName           string        `yaml:"db-name"`
 	TableName        string        `yaml:"table-name"`
@@ -143,7 +147,7 @@ func (c *Config) parseValues() error {
 					col.arrayStringValues[j] = append(col.arrayStringValues[j], GetRandomString(length))
 				}
 			}
-		} else if col.IsMapType() {
+		} else if col.IsMapType() || col.IsJsonType() {
 			mapLength := col.ValueRange[4]
 			col.arrayStringValues = make([][]string, mapLength)
 			for j := 0; j < mapLength; j++ {
@@ -162,6 +166,10 @@ func (c *Config) parseValues() error {
 	}
 
 	return nil
+}
+
+func genJson(keys []string, values []float64) {
+
 }
 
 func IpFromUint32(ipInt uint32) net.IP {
@@ -236,6 +244,20 @@ func (c *Config) genItem(time uint32) writeItem {
 				mapItem[v.mapKeys[i]] = v.arrayStringValues[i][randn(100000000)%len(v.arrayStringValues[i])]
 			}
 			items = append(items, mapItem)
+		} else if v.IsJsonType() {
+			min := v.ValueRange[3]
+			max := v.ValueRange[4]
+			length := min + randn(max-min)
+			jsonItem := "{"
+			for i := 0; i < length; i++ {
+				if i != 0 {
+					jsonItem += fmt.Sprintf(`"%s":%s`, v.mapKeys[i], v.arrayStringValues[i][randn(100000000)%len(v.arrayStringValues[i])])
+				} else {
+					jsonItem += fmt.Sprintf(`,"%s":%s`, v.mapKeys[i], v.arrayStringValues[i][randn(100000000)%len(v.arrayStringValues[i])])
+				}
+			}
+			jsonItem += "}"
+			items = append(items, jsonItem)
 		}
 	}
 	return items

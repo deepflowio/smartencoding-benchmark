@@ -40,7 +40,7 @@ var log = logging.MustGetLogger("ckwriter")
 
 const (
 	FLUSH_TIMEOUT  = 10 * time.Second
-	SQL_LOG_LENGTH = 256
+	SQL_LOG_LENGTH = 2560
 )
 
 type CKWriter struct {
